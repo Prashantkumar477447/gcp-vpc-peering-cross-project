@@ -1,20 +1,16 @@
-# GCP VPC Peering Across Projects
+# GCP VPC Peering (Cross-Project) using Google Cloud Console (GUI)
 
-This repository provides step-by-step instructions and Terraform/IaC templates (if needed) for setting up **VPC Network Peering between two different Google Cloud Platform (GCP) projects**.
-
-## 📌 Overview
-
-VPC Network Peering allows private connectivity across two Virtual Private Cloud (VPC) networks in GCP. This setup enables secure and high-performance internal traffic between resources in two separate GCP projects, without traversing the public internet.
-
-### 🔗 Key Use Case
-
-- Internal communication between services hosted in **Project A** and **Project B**.
-- Centralized networking (shared VPC model alternative).
-- Hybrid architectures and service segregation by project.
+This guide walks you through setting up **VPC Network Peering between two different GCP projects** using the **Google Cloud Console (GUI)** — no command-line tools required.
 
 ---
 
-## 🧭 Architecture Diagram
+## 📌 Use Case
+
+Establish a **private connection** between services running in separate GCP projects using VPC peering. This allows secure communication over internal IPs without exposing traffic to the internet.
+
+---
+
+## 🧭 High-Level Architecture
 
 ```
 
@@ -24,97 +20,95 @@ Project A (VPC-A)                     Project B (VPC-B)
 |  VM, GKE, etc.   |                 |  VM, GKE, etc.   |
 +------------------+                 +------------------+
 
-````
+```
 
 ---
 
-## ⚙️ Prerequisites
+## 🧑‍💻 Prerequisites
 
-- Two existing GCP projects (with billing enabled)
-- VPCs already created in both projects
-- Proper IAM roles:
-  - **Network Admin** on both projects
-  - **Project Editor/Owner** (for creating peering and permissions)
-
----
-
-## 🔧 Steps to Configure VPC Peering
-
-### ✅ 1. Enable APIs
-
-In both projects:
-```bash
-gcloud services enable compute.googleapis.com
-````
-
-### ✅ 2. Create VPC Peering from Project A
-
-```bash
-gcloud compute networks peerings create peering-to-b \
-  --network=VPC_A \
-  --peer-project=PROJECT_B_ID \
-  --peer-network=VPC_B \
-  --auto-create-routes \
-  --project=PROJECT_A_ID
-```
-
-### ✅ 3. Create VPC Peering from Project B
-
-```bash
-gcloud compute networks peerings create peering-to-a \
-  --network=VPC_B \
-  --peer-project=PROJECT_A_ID \
-  --peer-network=VPC_A \
-  --auto-create-routes \
-  --project=PROJECT_B_ID
-```
-
-### ✅ 4. Verify Peering
-
-In either project:
-
-```bash
-gcloud compute networks peerings list --project=PROJECT_A_ID
-```
-
-Check status is `ACTIVE` and `PEERING`.
+- Two GCP projects with billing enabled
+- VPC networks created in each project (non-overlapping IP ranges)
+- IAM roles:
+  - **Network Admin** in both projects
+  - Optional: **Project Editor/Owner**
 
 ---
 
-## 🔐 IAM Permissions Required
+## ✅ Steps (Using GCP Console)
 
-| Role                     | Resource Scope        |
-| ------------------------ | --------------------- |
-| Compute Network Admin    | Both Projects         |
-| Project Viewer (minimum) | Cross-project peering |
+### Step 1: Go to the VPC Network Page
 
----
+1. Navigate to the **VPC Network** section in **Project A**:
+   - https://console.cloud.google.com/networking/networks
 
-## 🚧 Notes
-
-* Peering is **not transitive**: If Project A is peered with B, and B with C, A cannot reach C.
-* CIDR ranges in the VPCs **must not overlap**.
-* No NAT or Internet Gateway is involved; traffic is private.
+2. Click on your VPC network (e.g., `vpc-a`).
 
 ---
 
-## 📁 Folder Structure (If Terraform is included)
+### Step 2: Create Peering from Project A to Project B
 
-```
-.
-├── terraform/
-│   ├── project_a/
-│   └── project_b/
-├── README.md
-```
+1. Click the **"Peerings"** tab.
+2. Click **"Create Peering Connection"**.
+3. Fill in the fields:
+   - **Name**: `peering-to-b`
+   - **Your VPC network**: `vpc-a`
+   - **Peer project ID**: `PROJECT_B_ID`
+   - **Peer VPC network name**: `vpc-b`
+4. Enable **Exchange custom routes** if needed.
+5. Click **Create**.
+
+> Note: Peering is **not active** until both sides have configured it.
+
+---
+
+### Step 3: Repeat in Project B
+
+1. Switch to **Project B** in the Console.
+2. Go to **VPC Network → Networks**.
+3. Select your VPC (e.g., `vpc-b`) → **Peerings** → **Create Peering Connection**.
+4. Enter:
+   - **Name**: `peering-to-a`
+   - **Your VPC network**: `vpc-b`
+   - **Peer project ID**: `PROJECT_A_ID`
+   - **Peer VPC network name**: `vpc-a`
+5. Enable **Exchange custom routes** if needed.
+6. Click **Create**.
+
+---
+
+### Step 4: Verify Peering Status
+
+- In both projects, go to the **Peerings** tab of your VPC.
+- Status should show as **"ACTIVE"**.
+- If it's "INACTIVE", double-check names, project IDs, and permissions.
+
+---
+
+## 🔐 Permissions Required
+
+| Role              | Description                         |
+|-------------------|-------------------------------------|
+| Network Admin     | Required to create/manage VPCs      |
+| Project Viewer    | Optional; to view VPC configurations|
+| Compute Admin     | To manage routes (if needed)        |
+
+---
+
+## 🚧 Considerations
+
+- **IP ranges must not overlap.**
+- **Peering is NOT transitive** (A ↔ B, B ↔ C ≠ A ↔ C).
+- You cannot use IAM-based access control across peered networks.
+- Ensure firewall rules allow traffic between subnets.
 
 ---
 
 ## 📚 References
 
-* [GCP VPC Peering Documentation](https://cloud.google.com/vpc/docs/vpc-peering)
-* [GCP gcloud CLI Reference](https://cloud.google.com/sdk/gcloud/reference/compute/networks/peerings/create)
+- [VPC Network Peering Overview](https://cloud.google.com/vpc/docs/vpc-peering)
+- [Peering via Console](https://cloud.google.com/vpc/docs/using-vpc-peering#console)
 
 ---
 
 
+Would you like to include **screenshots** or a **troubleshooting guide** for common issues like "inactive peering" or "firewall blocking traffic"?
