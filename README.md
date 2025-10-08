@@ -1,4 +1,4 @@
-# GCP VPC Peering (Cross-Project) using Google Cloud Console (GUI)
+# GCP VPC Peering (Cross-Project) 
 
 This guide walks you through setting up **VPC Network Peering between two different GCP projects** 
 
