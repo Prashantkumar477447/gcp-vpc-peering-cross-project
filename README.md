@@ -1,18 +1,3 @@
-Here's a suggested **README.md** file for setting up **VPC Peering between two different GCP projects**, along with a professional and relevant **GitHub repo name**.
-
----
-
-## 📁 **Suggested Repository Name:**
-
-```
-gcp-vpc-peering-cross-project
-```
-
----
-
-## 📝 **README.md**
-
-```markdown
 # GCP VPC Peering Across Projects
 
 This repository provides step-by-step instructions and Terraform/IaC templates (if needed) for setting up **VPC Network Peering between two different Google Cloud Platform (GCP) projects**.
