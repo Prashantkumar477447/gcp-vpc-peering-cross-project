@@ -100,6 +100,9 @@ Project A (VPC-A)                     Project B (VPC-B)
 - **Peering is NOT transitive** (A ↔ B, B ↔ C ≠ A ↔ C).
 - You cannot use IAM-based access control across peered networks.
 - Ensure firewall rules allow traffic between subnets.
+![WhatsApp Image 2025-10-09 at 14 30 53_63005a15](https://github.com/user-attachments/assets/f7b28c4b-b989-4d87-9fa8-b46793b8044e)
+![WhatsApp Image 2025-10-09 at 14 34 02_4ea3ac2f](https://github.com/user-attachments/assets/333fcc99-49f2-4b9f-8648-0e747046e646)
+
 
 ---
 
